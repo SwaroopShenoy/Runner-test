@@ -1,0 +1,51 @@
+name: Test ARC Runner with GitHub App
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-basic:
+    runs-on: test-app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Print runner info
+        run: |
+          echo "Runner name: $RUNNER_NAME"
+          echo "Runner OS: $RUNNER_OS"
+          echo "Runner arch: $RUNNER_ARCH"
+          uname -a
+      
+      - name: Test Docker
+        run: |
+          docker --version
+          docker info
+      
+      - name: Build test image
+        run: |
+          cat > Dockerfile << 'EOF'
+          FROM alpine:latest
+          RUN echo "Hello from ARC with GitHub App!" > /message.txt
+          CMD cat /message.txt
+          EOF
+          
+          docker build -t test-arc:latest .
+          docker run --rm test-arc:latest
+      
+      - name: Test Docker Compose
+        run: |
+          cat > docker-compose.yml << 'EOF'
+          version: '3.8'
+          services:
+            test:
+              image: alpine:latest
+              command: echo "Docker Compose works!"
+          EOF
+          
+          docker compose up
+      
+      - name: Success
+        run: echo "✅ GitHub App authentication working perfectly!"

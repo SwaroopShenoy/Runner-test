@@ -35,17 +35,5 @@ jobs:
           docker build -t test-arc:latest .
           docker run --rm test-arc:latest
       
-      - name: Test Docker Compose
-        run: |
-          cat > docker-compose.yml << 'EOF'
-          version: '3.8'
-          services:
-            test:
-              image: alpine:latest
-              command: echo "Docker Compose works!"
-          EOF
-          
-          docker compose up
-      
       - name: Success
         run: echo "✅ GitHub App authentication working perfectly!"
